@@ -35,6 +35,8 @@ void BREW::ResetProperties() {
 	SetProperty( "Window", "BorderColorShift", 0 );
 	SetProperty( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
 	SetProperty( "Window", "TitlePadding", 5.f );
+	SetProperty( "Window", "CTitlePaddingNudgeX", 0.f );
+	SetProperty( "Window", "CTitlePaddingNudgeY", 0.f );
 	SetProperty( "Window", "HandleSize", 10.f );
 	SetProperty( "Window", "ShadowDistance", 3.f );
 	SetProperty( "Window", "ShadowAlpha", 100.f );
