@@ -44,6 +44,8 @@ void BREW::ResetProperties() {
 	SetProperty( "Window", "CloseThickness", 3.f );
 
 	// Button-specific.
+	SetProperty( "Button", "CLabelPaddingNudgeX", 0.f );
+	SetProperty( "Button", "CLabelPaddingNudgeY", 0.f );
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "Spacing", 5.f );
