@@ -9,8 +9,7 @@ namespace sfg {
 namespace eng {
 
 std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const Button> button ) const {
-	auto label_padding_nudge_x = GetProperty<float>( "CLabelPaddingNudgeX", button );
-	auto label_padding_nudge_y = GetProperty<float>( "CLabelPaddingNudgeY", button );
+	auto c_font_compensation = GetProperty<float>( "CFontCompensation", button );
 	auto border_color = GetProperty<sf::Color>( "BorderColor", button );
 	auto border_color_shift = GetProperty<int>( "BorderColorShift", button );
 	auto background_color = GetProperty<sf::Color>( "BackgroundColor", button );
@@ -50,16 +49,16 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 
 		if( !child ) {
 			text.setPosition(
-				( button->GetAllocation().width / 2.f - metrics.x / 2.f + offset ) + label_padding_nudge_x,
-				( button->GetAllocation().height / 2.f - metrics.y / 2.f + offset ) + label_padding_nudge_y
+				( button->GetAllocation().width / 2.f - metrics.x / 2.f + offset ),
+				( button->GetAllocation().height / 2.f - metrics.y / 2.f + offset ) + c_font_compensation
 			);
 		}
 		else {
 			float width( button->GetAllocation().width - spacing - child->GetAllocation().width );
 
 			text.setPosition(
-				( child->GetAllocation().width + spacing + (width / 2.f - metrics.x / 2.f) + offset ) + label_padding_nudge_x,
-				( button->GetAllocation().height / 2.f - metrics.y / 2.f + offset ) + label_padding_nudge_y
+				( child->GetAllocation().width + spacing + (width / 2.f - metrics.x / 2.f) + offset ),
+				( button->GetAllocation().height / 2.f - metrics.y / 2.f + offset ) + c_font_compensation
 			);
 		}
 

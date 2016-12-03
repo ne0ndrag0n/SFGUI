@@ -18,8 +18,7 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 	auto border_color_shift = GetProperty<int>( "BorderColorShift", window );
 	auto border_width = GetProperty<float>( "BorderWidth", window );
 	auto title_padding = GetProperty<float>( "TitlePadding", window );
-	auto title_padding_nudge_x = GetProperty<float>( "CTitlePaddingNudgeX", window );
-	auto title_padding_nudge_y = GetProperty<float>( "CTitlePaddingNudgeY", window );
+	auto c_font_compensation = GetProperty<float>( "CFontCompensation", window );
 	auto shadow_distance = GetProperty<float>( "ShadowDistance", window );
 	auto handle_size = GetProperty<float>( "HandleSize", window );
 	auto shadow_alpha = GetProperty<sf::Uint8>( "ShadowAlpha", window );
@@ -158,8 +157,8 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 
 		// Calculate title text position.
 		sf::Vector2f title_position(
-			border_width + title_padding + title_padding_nudge_x,
-			( border_width + title_size / 2.f - static_cast<float>( title_font_size ) / 2.f ) + title_padding_nudge_y
+			border_width + title_padding,
+			( border_width + title_size / 2.f - static_cast<float>( title_font_size ) / 2.f ) + c_font_compensation
 		);
 
 		title_text.setPosition( title_position );

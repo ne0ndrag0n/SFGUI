@@ -28,6 +28,7 @@ void BREW::ResetProperties() {
 	SetProperty( "*", "BorderWidth", 1.f );
 	SetProperty( "*", "Padding", 5.f );
 	SetProperty( "*", "Thickness", 2.f );
+	SetProperty( "*", "CFontCompensation", 0.f );
 
 	// Window-specific.
 	SetProperty( "Window", "Gap", 10.f );
@@ -35,8 +36,6 @@ void BREW::ResetProperties() {
 	SetProperty( "Window", "BorderColorShift", 0 );
 	SetProperty( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
 	SetProperty( "Window", "TitlePadding", 5.f );
-	SetProperty( "Window", "CTitlePaddingNudgeX", 0.f );
-	SetProperty( "Window", "CTitlePaddingNudgeY", 0.f );
 	SetProperty( "Window", "HandleSize", 10.f );
 	SetProperty( "Window", "ShadowDistance", 3.f );
 	SetProperty( "Window", "ShadowAlpha", 100.f );
@@ -44,8 +43,6 @@ void BREW::ResetProperties() {
 	SetProperty( "Window", "CloseThickness", 3.f );
 
 	// Button-specific.
-	SetProperty( "Button", "CLabelPaddingNudgeX", 0.f );
-	SetProperty( "Button", "CLabelPaddingNudgeY", 0.f );
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "Spacing", 5.f );
