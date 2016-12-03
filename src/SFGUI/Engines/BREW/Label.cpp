@@ -9,6 +9,7 @@ namespace sfg {
 namespace eng {
 
 std::unique_ptr<RenderQueue> BREW::CreateLabelDrawable( std::shared_ptr<const Label> label ) const {
+	auto c_font_compensation = GetProperty<float>( "CFontCompensation", label );
 	const auto& font_name = GetProperty<std::string>( "FontName", label );
 	const auto& font = GetResourceManager().GetFont( font_name );
 	auto font_size = GetProperty<unsigned int>( "FontSize", label );
@@ -24,7 +25,7 @@ std::unique_ptr<RenderQueue> BREW::CreateLabelDrawable( std::shared_ptr<const La
 		sf::Vector2f avail_space( label->GetAllocation().width - label->GetRequisition().x, label->GetAllocation().height - label->GetRequisition().y );
 		sf::Vector2f position( avail_space.x * label->GetAlignment().x, avail_space.y * label->GetAlignment().y );
 
-		vis_label.setPosition( position.x, position.y );
+		vis_label.setPosition( position.x, position.y + c_font_compensation );
 	}
 
 	queue->Add( Renderer::Get().CreateText( vis_label ) );
