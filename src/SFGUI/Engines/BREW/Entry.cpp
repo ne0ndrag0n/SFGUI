@@ -9,6 +9,7 @@ namespace sfg {
 namespace eng {
 
 std::unique_ptr<RenderQueue> BREW::CreateEntryDrawable( std::shared_ptr<const Entry> entry ) const {
+	auto c_font_compensation = GetProperty<float>( "CFontCompensation", entry );
 	auto border_color = GetProperty<sf::Color>( "BorderColor", entry );
 	auto background_color = GetProperty<sf::Color>( "BackgroundColor", entry );
 	auto text_color = GetProperty<sf::Color>( "Color", entry );
@@ -37,8 +38,8 @@ std::unique_ptr<RenderQueue> BREW::CreateEntryDrawable( std::shared_ptr<const En
 
 	auto line_height = GetFontLineHeight( *font, font_size );
 	sf::Text vis_label( entry->GetVisibleText(), *font, font_size );
-	vis_label.setColor( text_color );
-	vis_label.setPosition( text_padding, entry->GetAllocation().height / 2.f - line_height / 2.f );
+	vis_label.setFillColor( text_color );
+	vis_label.setPosition( text_padding, ( entry->GetAllocation().height / 2.f - line_height / 2.f ) + c_font_compensation );
 
 	queue->Add( Renderer::Get().CreateText( vis_label ) );
 
