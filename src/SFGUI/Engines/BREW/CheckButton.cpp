@@ -9,6 +9,7 @@ namespace sfg {
 namespace eng {
 
 std::unique_ptr<RenderQueue> BREW::CreateCheckButtonDrawable( std::shared_ptr<const CheckButton> check ) const {
+	auto c_font_compensation = GetProperty<float>( "CFontCompensation", check );
 	auto border_color = GetProperty<sf::Color>( "BorderColor", check );
 	auto background_color = GetProperty<sf::Color>( "BackgroundColor", check );
 	auto color = GetProperty<sf::Color>( "Color", check );
@@ -60,7 +61,7 @@ std::unique_ptr<RenderQueue> BREW::CreateCheckButtonDrawable( std::shared_ptr<co
 		sf::Text text( check->GetLabel(), *font, font_size );
 		text.setPosition(
 			box_size + spacing,
-			check->GetAllocation().height / 2.f - metrics.y / 2.f
+			( check->GetAllocation().height / 2.f - metrics.y / 2.f ) + c_font_compensation
 		);
 		text.setFillColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
