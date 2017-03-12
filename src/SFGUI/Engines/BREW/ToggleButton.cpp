@@ -9,6 +9,7 @@ namespace sfg {
 namespace eng {
 
 std::unique_ptr<RenderQueue> BREW::CreateToggleButtonDrawable( std::shared_ptr<const ToggleButton> button ) const {
+	auto c_font_compensation = GetProperty<float>( "CFontCompensation", button );
 	auto border_color = GetProperty<sf::Color>( "BorderColor", button );
 	auto border_color_shift = GetProperty<int>( "BorderColorShift", button );
 	auto background_color = GetProperty<sf::Color>( "BackgroundColor", button );
@@ -46,7 +47,7 @@ std::unique_ptr<RenderQueue> BREW::CreateToggleButtonDrawable( std::shared_ptr<c
 
 		text.setPosition(
 			button->GetAllocation().width / 2.f - metrics.x / 2.f + offset,
-			button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
+			( button->GetAllocation().height / 2.f - metrics.y / 2.f + offset ) + c_font_compensation
 		);
 
 		text.setColor( color );
