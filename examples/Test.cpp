@@ -20,6 +20,7 @@ class SampleApp {
 		void OnAddButtonVClick();
 		void OnToggleTitlebarClick();
 		void OnHideWindowClicked();
+		void OnToggleOrientationClick();
 		void OnToggleSpaceClick();
 		void OnLimitCharsToggle();
 		void OnLoadThemeClick();
@@ -30,12 +31,15 @@ class SampleApp {
 		void RenderCustomGL();
 		void RenderCustomSFML();
 
+		sf::RenderWindow m_window;
+
 		// Create an SFGUI. This is required before doing anything with SFGUI.
 		sfg::SFGUI m_sfgui;
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
 		sfg::Box::Ptr m_boxbuttonsv;
+		sfg::Box::Ptr m_boxorientation;
 		sfg::Entry::Ptr m_entry;
 		sfg::Table::Ptr m_table;
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
@@ -60,8 +64,6 @@ class SampleApp {
 		sf::Texture m_background_texture;
 		sf::Sprite m_background_sprite;
 		sf::Sprite m_canvas_sprite;
-
-		sf::RenderWindow m_window;
 
 		GLuint m_custom_draw_display_list;
 };
@@ -99,8 +101,8 @@ void Ouchy::DoOuch() {
 }
 
 SampleApp::SampleApp() :
-	m_desktop(),
 	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) ),
+	m_desktop(),
 	m_custom_draw_display_list( 0 )
 {
 	m_background_texture.create( 1024, 768 );
@@ -135,6 +137,10 @@ SampleApp::SampleApp() :
 }
 
 SampleApp::~SampleApp() {
+	if( m_custom_draw_display_list ) {
+		glDeleteLists( m_custom_draw_display_list, 1 );
+	}
+
 	Ouchy::m_ouchies.clear();
 }
 
@@ -143,6 +149,7 @@ void SampleApp::Run() {
 
 	//m_window.SetFramerateLimit( 60 );
 	//m_window.EnableVerticalSync( true );
+	m_window.setActive( true );
 
 	std::string renderer_string;
 
@@ -226,6 +233,7 @@ void SampleApp::Run() {
 		}
 	}
 
+	auto btntoggleori = sfg::Button::Create( L"Box Orientation" );
 	auto btntogglespace = sfg::Button::Create( L"Box Spacing" );
 	auto btnloadstyle = sfg::Button::Create( L"Load theme" );
 
@@ -254,6 +262,7 @@ void SampleApp::Run() {
 
 	auto boxtoolbar2 = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
 	boxtoolbar2->SetSpacing( 5.f );
+	boxtoolbar2->Pack( btntoggleori, false );
 	boxtoolbar2->Pack( btntogglespace, false );
 	boxtoolbar2->Pack( btnloadstyle, false );
 
@@ -262,6 +271,11 @@ void SampleApp::Run() {
 
 	m_boxbuttonsv = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
 	m_boxbuttonsv->SetSpacing( 5.f );
+
+	m_boxorientation = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
+	m_boxorientation->SetSpacing( 5.f );
+	m_boxorientation->Pack( sfg::Button::Create( L"Hello" ) );
+	m_boxorientation->Pack( sfg::Button::Create( L"World" ) );
 
 	auto username_entry = sfg::Entry::Create();
 	username_entry->SetMaximumLength( 8 );
@@ -411,6 +425,7 @@ void SampleApp::Run() {
 	boxmain->Pack( box_image, true );
 	boxmain->Pack( separatorh, false );
 	boxmain->Pack( m_table, true );
+	boxmain->Pack( m_boxorientation, true );
 	boxmain->Pack( m_scrolled_window );
 
 	auto notebook1 = sfg::Notebook::Create();
@@ -439,18 +454,19 @@ void SampleApp::Run() {
 	m_wndmain->Add( notebook1 );
 
 	// Signals.
-	m_wndmain->GetSignal( sfg::Window::OnCloseButton ).Connect( std::bind( &SampleApp::OnHideWindowClicked, this ) );
-	btnaddbuttonh->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnAddButtonHClick, this ) );
-	btnaddbuttonv->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnAddButtonVClick, this ) );
-	m_titlebar_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleTitlebarClick, this ) );
-	btnhidewindow->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnHideWindowClicked, this ) );
-	btntogglespace->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleSpaceClick, this ) );
-	m_limit_check->GetSignal( sfg::ToggleButton::OnToggle ).Connect( std::bind( &SampleApp::OnLimitCharsToggle, this ) );
-	btnloadstyle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnLoadThemeClick, this ) );
-	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( std::bind( &SampleApp::OnAdjustmentChange, this ) );
-	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleSpinner, this ) );
-	mirror_image->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnMirrorImageClick, this ) );
-	m_switch_renderer->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnSwitchRendererClick, this ) );
+	m_wndmain->GetSignal( sfg::Window::OnCloseButton ).Connect( [this] { OnHideWindowClicked(); } );
+	btnaddbuttonh->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnAddButtonHClick(); } );
+	btnaddbuttonv->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnAddButtonVClick(); } );
+	m_titlebar_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnToggleTitlebarClick(); } );
+	btnhidewindow->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnHideWindowClicked(); } );
+	btntoggleori->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnToggleOrientationClick(); } );
+	btntogglespace->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnToggleSpaceClick(); } );
+	m_limit_check->GetSignal( sfg::ToggleButton::OnToggle ).Connect( [this] { OnLimitCharsToggle(); } );
+	btnloadstyle->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnLoadThemeClick(); } );
+	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( [this] { OnAdjustmentChange(); } );
+	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnToggleSpinner(); } );
+	mirror_image->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnMirrorImageClick(); } );
+	m_switch_renderer->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnSwitchRendererClick(); } );
 
 	spinbutton->SetValue( 20.f );
 	spinbutton->GetAdjustment()->SetMinorStep( .8f );
@@ -529,7 +545,7 @@ void SampleApp::Run() {
 	while( m_window.isOpen() ) {
 		while( m_window.pollEvent( event ) ) {
 			if( event.type == sf::Event::Closed ) {
-				m_window.close();
+				return;
 			}
 
 			m_desktop.HandleEvent( event );
@@ -592,8 +608,6 @@ void SampleApp::Run() {
 
 		++m_fps_counter;
 	}
-
-	glDeleteLists( m_custom_draw_display_list, 1 );
 }
 
 void SampleApp::OnAddButtonHClick() {
@@ -602,7 +616,15 @@ void SampleApp::OnAddButtonHClick() {
 	auto ouchy = std::make_shared<Ouchy>( button );
 	Ouchy::m_ouchies.push_back( ouchy );
 
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &Ouchy::DoOuch, ouchy.get() ) );
+	std::weak_ptr<Ouchy> weak_ouchy = ouchy;
+
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [weak_ouchy] {
+		auto strong_ouchy = weak_ouchy.lock();
+
+		if( strong_ouchy ) {
+			strong_ouchy->DoOuch();
+		}
+	} );
 
 	m_boxbuttonsh->Pack( button, true );
 }
@@ -613,7 +635,15 @@ void SampleApp::OnAddButtonVClick() {
 	auto ouchy = std::make_shared<Ouchy>( button );
 	Ouchy::m_ouchies.push_back( ouchy );
 
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &Ouchy::DoOuch, ouchy.get() ) );
+	std::weak_ptr<Ouchy> weak_ouchy = ouchy;
+
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [weak_ouchy] {
+		auto strong_ouchy = weak_ouchy.lock();
+
+		if( strong_ouchy ) {
+			strong_ouchy->DoOuch();
+		}
+	} );
 
 	m_boxbuttonsv->Pack( button, false );
 }
@@ -626,6 +656,15 @@ void SampleApp::OnHideWindowClicked() {
 	m_wndmain->Show( !m_wndmain->IsLocallyVisible() );
 }
 
+void SampleApp::OnToggleOrientationClick() {
+	if( m_boxorientation->GetOrientation() == sfg::Box::Orientation::HORIZONTAL ) {
+		m_boxorientation->SetOrientation( sfg::Box::Orientation::VERTICAL );
+	}
+	else {
+		m_boxorientation->SetOrientation( sfg::Box::Orientation::HORIZONTAL );
+	}
+}
+
 void SampleApp::OnToggleSpaceClick() {
 	if( m_scrolled_window_box->GetSpacing() > .0f ) {
 		m_scrolled_window_box->SetSpacing( .0f );
@@ -634,6 +673,7 @@ void SampleApp::OnToggleSpaceClick() {
 		m_scrolled_window_box->SetSpacing( 40.f );
 	}
 }
+
 
 void SampleApp::OnLimitCharsToggle() {
 	if( m_limit_check->IsActive() ) {
