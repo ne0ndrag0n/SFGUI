@@ -82,6 +82,8 @@ class SFGUI_API Table : public Container {
 		void HandleRequisitionChange() override;
 		void HandleRemove( Widget::Ptr child ) override;
 
+		// nd proprietary
+	public:
 		TableCellList m_cells;
 		TableOptionsArray m_columns;
 		TableOptionsArray m_rows;
