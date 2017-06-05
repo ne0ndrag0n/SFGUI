@@ -215,6 +215,11 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 */
 		std::string GetClass() const;
 
+		/** Determine if widget has the given class
+		 * @return true if class is in space-separated list, false otherwise.
+		 */
+		bool HasClass( const std::string& cls ) const;
+
 		/** Get all widgets with the specified ID.
 		 * @param id ID the widget should have.
 		 * @return Widget::Ptr of the first found widget with the specified ID or Widget::Ptr() if none found.
@@ -454,6 +459,11 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 			std::string id;
 			std::string class_;
 		};
+
+		/** Split string
+		 * @return Tokenised string
+		 */
+		static std::vector< std::string > SplitIdentifier( const std::string& subject, char delimiter = ' ' );
 
 		static void SetActiveWidget( Ptr widget );
 		static bool IsActiveWidget( PtrConst widget );

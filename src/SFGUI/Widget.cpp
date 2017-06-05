@@ -9,6 +9,7 @@
 #include <SFML/Window/Event.hpp>
 #include <cmath>
 #include <limits>
+#include <sstream>
 
 namespace {
 
@@ -645,6 +646,18 @@ std::string Widget::GetClass() const {
 	return m_class_id->class_;
 }
 
+bool Widget::HasClass( const std::string& cls ) const {
+	std::vector< std::string > classes = SplitIdentifier( GetClass() );
+
+	for( std::string& token : classes ) {
+		if( token == cls ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 Widget::Ptr SearchContainerForId( Container::PtrConst container, const std::string& id ) {
 	if( !container ) {
 		return Widget::Ptr();
@@ -699,7 +712,7 @@ Widget::WidgetsList SearchContainerForClass( Container::PtrConst container, cons
 	}
 
 	for( const auto& child : container->GetChildren() ) {
-		if( child->GetClass() == class_name ) {
+		if( child->HasClass( class_name ) ) {
 			result.push_back( child );
 		}
 
@@ -723,7 +736,7 @@ Widget::WidgetsList Widget::GetWidgetsByClass( const std::string& class_name ) {
 	WidgetsList result;
 
 	for( const auto& root_widget : root_widgets ) {
-		if( root_widget->GetClass() == class_name ) {
+		if( root_widget->HasClass( class_name ) ) {
 			result.push_back( root_widget->shared_from_this() );
 		}
 
@@ -921,6 +934,19 @@ bool Widget::HasModal() {
 
 const std::vector<Widget*>& Widget::GetRootWidgets() {
 	return root_widgets;
+}
+
+std::vector< std::string > Widget::SplitIdentifier( const std::string& subject, char delimiter ) {
+	std::vector< std::string > strings;
+
+	std::stringstream stream( subject );
+	std::string token;
+
+	while ( std::getline( stream, token, delimiter ) ) {
+		strings.push_back( token );
+	}
+
+	return strings;
 }
 
 }

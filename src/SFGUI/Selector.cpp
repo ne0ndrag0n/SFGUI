@@ -193,7 +193,7 @@ bool Selector::Matches( Widget::PtrConst widget ) const {
 	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && !m_state ) || // Wildcard
 		 ( ( m_widget.empty() || !m_widget.compare("*") || m_widget == widget->GetName() ) && //
 		 ( m_id.empty() || m_id == widget->GetId() ) && // Selector and widget match
-		 ( m_class.empty() || m_class  == widget->GetClass() ) && //
+		 ( m_class.empty() || widget->HasClass( m_class ) ) && //
 		 ( !m_state || *m_state == widget->GetState() ) ) ) { //
 		// Current stage is a pass...
 
