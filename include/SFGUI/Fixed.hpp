@@ -40,13 +40,15 @@ class SFGUI_API Fixed : public Container {
 
 		sf::Vector2f CalculateRequisition() override;
 
-	private:
+		// nd proprietary extensions
 		typedef std::map<Widget::Ptr, sf::Vector2f> ChildrenPositionMap;
+		ChildrenPositionMap m_children_position_map;
+
+	private:
 
 		bool HandleAdd( Widget::Ptr child ) override;
 		void HandleRemove( Widget::Ptr child ) override;
 
-		ChildrenPositionMap m_children_position_map;
 };
 
 }
