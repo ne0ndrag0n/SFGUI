@@ -33,16 +33,16 @@ class SFGUI_API Fixed : public Container {
 		 */
 		void Move( Widget::Ptr widget, const sf::Vector2f& position );
 
+		// nd proprietary extensions
+		typedef std::map<Widget::Ptr, sf::Vector2f> ChildrenPositionMap;
+		ChildrenPositionMap m_children_position_map;
+
 	protected:
 		/** Ctor.
 		 */
 		Fixed() = default;
 
 		sf::Vector2f CalculateRequisition() override;
-
-		// nd proprietary extensions
-		typedef std::map<Widget::Ptr, sf::Vector2f> ChildrenPositionMap;
-		ChildrenPositionMap m_children_position_map;
 
 	private:
 
